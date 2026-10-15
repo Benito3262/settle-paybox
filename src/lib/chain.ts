@@ -8,6 +8,7 @@ const NETS = {
   base: { chain: base, usdc: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", usdcName: "USD Coin", explorer: "https://basescan.org", rpc: "https://mainnet.base.org" },
   sepolia: { chain: sepolia, usdc: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238", usdcName: "USDC", explorer: "https://sepolia.etherscan.io", rpc: "https://ethereum-sepolia-rpc.publicnode.com" },
 } as const;
+export const netConfig = (n: Net) => NETS[n] ?? NETS["base-sepolia"];
 export const NETWORK = (process.env.SETTLE_NETWORK || "base-sepolia") as Net;
 const N = NETS[NETWORK] ?? NETS["base-sepolia"];
 export const chain = N.chain;

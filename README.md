@@ -31,7 +31,7 @@ Dashboard polling + daily Vercel cron ─▶ /api/cron ─▶ release / refund a
 ```
 - Next.js 16 on Vercel, Supabase Postgres (key-guarded RPC functions, RLS on), viem for Base.
 - `SETTLE_NETWORK=sepolia` (Ethereum Sepolia, chain 11155111 — current testnet funds), `base-sepolia`, or `base` (mainnet). One env var flips USDC address, RPC, explorer.
-- x402 fees settle on `X402_NETWORK` (default base-sepolia when escrow is on Eth Sepolia, since the public x402.org facilitator does not support Eth Sepolia).
+- x402 fees settle on `X402_NETWORK`. With `X402_NETWORK=sepolia` (or `X402_FACILITATOR=self`) Settle runs its own built-in facilitator: it verifies EIP-3009 `transferWithAuthorization` signatures (EIP-712 domain read from the USDC contract, amount, payTo, validity window, unused nonce, balance) and settles on-chain from the escrow wallet, which pays gas. Accepts v1 `X-PAYMENT` and v2 `PAYMENT-SIGNATURE` headers.
 - Escrow is a server-held wallet for the hackathon (key only in Vercel env). Next step: an on-chain escrow contract with an arbiter-signed release.
 
 ## API
