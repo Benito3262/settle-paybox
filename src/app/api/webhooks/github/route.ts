@@ -15,6 +15,6 @@ export async function POST(req: Request) {
   const deals = (await db.list(true)).filter((d) => d.status === "funded" && d.condition.type === "github_pr_merged" && d.condition.repo.toLowerCase() === repo);
   const what = ev === "pull_request" ? `PR #${p.pull_request.number} merged` : `issue #${p.issue.number} closed`;
   const results: Record<string, string | undefined> = {};
-  for (const d of deals) { await db.event(d.id, "webhook", `GitHub: ${what} in ${repo}; verifying via API`); results[d.id] = (await tick(d.id, "github webhook"))?.status; }
+  for (const d of deals) { await db.event(d.id, "webhook", `GitHub: ${what} in ${repo}; verifying via API`); for (let i = 0; i < 5; i++) { results[d.id] = (await tick(d.id, "github webhook"))?.status; if (results[d.id] !== "funded") break; await new Promise((r) => setTimeout(r, 6000)); } }
   return Response.json({ ok: true, results });
 }
