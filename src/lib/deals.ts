@@ -43,7 +43,8 @@ export async function fundDeal(id: string, tx: string) {
   const v = await verifyFunding(tx as Hex, Number(d.amount));
   if (!v.ok) throw new Error(v.reason);
   if (d.payer && d.payer.toLowerCase() !== v.from!.toLowerCase()) throw new Error("funding tx not sent from the deal's payer");
-  await db.update(id, { status: "funded", fund_tx: tx, payer: d.payer || v.from! });
+  if (!(await db.transition(id, "awaiting_funding", "funded"))) return { status: (await db.get(id))?.status };
+  await db.update(id, { fund_tx: tx, payer: d.payer || v.from! });
   await db.event(id, "funded", `${d.amount} USDC locked from ${v.from} tx ${tx}`);
   return { status: (await tick(id, "funding"))?.status };
 }

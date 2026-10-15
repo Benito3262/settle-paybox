@@ -28,6 +28,8 @@ export const db = {
   event: (id: string, kind: string, detail = "") => rpc<null>("settle_add_event", { deal_id: id, kind, detail }),
   get: (id: string) => rpc<Deal | null>("settle_get_deal", { deal_id: id }),
   list: (onlyOpen = false) => rpc<Deal[]>("settle_list", { only_open: onlyOpen }),
+  /** atomic compare-and-set on status; returns null if another caller won */
+  transition: (id: string, from: string, to: string) => rpc<Deal | null>("settle_transition", { deal_id: id, from_status: from, to_status: to }),
   txUsed: (tx: string) => rpc<boolean>("settle_tx_used", { tx }),
 };
 

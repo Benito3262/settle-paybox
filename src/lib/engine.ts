@@ -10,7 +10,7 @@ export async function tick(id: string, source = "check"): Promise<Deal | null> {
   if (!d || d.status !== "funded") return d;
   const res = await evaluate(d);
   if (res.met) {
-    await db.update(id, { status: "releasing" });
+    if (!(await db.transition(id, "funded", "releasing"))) return db.get(id);
     await db.event(id, "condition_met", `${res.detail} (via ${source})`);
     try {
       const fee = Math.floor(d.amount * FEE_BPS) / 10000;
@@ -25,7 +25,7 @@ export async function tick(id: string, source = "check"): Promise<Deal | null> {
     }
   } else if (Date.now() > Date.parse(d.deadline)) {
     if (!d.payer) { await db.event(id, "error", "deadline passed but payer unknown"); return db.get(id); }
-    await db.update(id, { status: "refunding" });
+    if (!(await db.transition(id, "funded", "refunding"))) return db.get(id);
     await db.event(id, "deadline_passed", res.detail);
     try {
       const tx = await payout(d.payer, d.amount);
@@ -41,7 +41,7 @@ export async function tick(id: string, source = "check"): Promise<Deal | null> {
 
 export async function expireUnfunded(d: Deal) {
   if (d.status === "awaiting_funding" && Date.now() > Date.parse(d.deadline)) {
-    await db.update(d.id, { status: "expired" });
+    if (!(await db.transition(d.id, "awaiting_funding", "expired"))) return;
     await db.event(d.id, "expired", "never funded before deadline");
   }
 }
