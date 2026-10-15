@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   try {
     switch (tool_id) {
       case "create_deal": { const g = await gate(req); if (g instanceof Response) return g; return Response.json({ status: "success", output: await createDeal(input) }); }
-      case "fund_deal": return Response.json({ status: "success", output: await fundDeal(input.deal_id, input.tx) });
+      case "fund_deal": return Response.json({ status: "success", output: await fundDeal(input.deal_id, input.tx, input.signed_tx) });
       case "confirm_deal": return Response.json({ status: "success", output: await confirmDeal(input.deal_id, input.token) });
       case "get_deal": { const d = await db.get(input.deal_id); if (!d) throw new Error("not found"); return Response.json({ status: "success", output: publicDeal(d) }); }
       case "check_deal": { const d = await tick(input.deal_id, "plugin"); if (!d) throw new Error("not found"); return Response.json({ status: "success", output: publicDeal(d) }); }

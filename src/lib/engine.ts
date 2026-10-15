@@ -1,6 +1,6 @@
 import { db, type Deal } from "./db";
 import { evaluate } from "./conditions";
-import { payout } from "./chain";
+import { payout, type Net } from "./chain";
 
 export const FEE_BPS = 50; // 0.5%
 
@@ -14,9 +14,9 @@ export async function tick(id: string, source = "check"): Promise<Deal | null> {
     await db.event(id, "condition_met", `${res.detail} (via ${source})`);
     try {
       const fee = Math.floor(d.amount * FEE_BPS) / 10000;
-      const tx = await payout(d.payee, +(d.amount - fee).toFixed(6));
+      const tx = await payout(d.payee, +(d.amount - fee).toFixed(6), d.network as Net);
       let feeTx: string | null = null;
-      if (process.env.FEE_WALLET && fee > 0) feeTx = await payout(process.env.FEE_WALLET, fee).catch(() => null);
+      if (process.env.FEE_WALLET && fee > 0) feeTx = await payout(process.env.FEE_WALLET, fee, d.network as Net).catch(() => null);
       await db.update(id, { status: "released", release_tx: tx, fee_tx: feeTx });
       await db.event(id, "released", `${(d.amount - fee).toFixed(2)} USDC → ${d.payee} (fee ${fee.toFixed(4)}) tx ${tx}`);
     } catch (e) {
@@ -28,7 +28,7 @@ export async function tick(id: string, source = "check"): Promise<Deal | null> {
     if (!(await db.transition(id, "funded", "refunding"))) return db.get(id);
     await db.event(id, "deadline_passed", res.detail);
     try {
-      const tx = await payout(d.payer, d.amount);
+      const tx = await payout(d.payer, d.amount, d.network as Net);
       await db.update(id, { status: "refunded", refund_tx: tx });
       await db.event(id, "refunded", `${d.amount} USDC → ${d.payer} tx ${tx}`);
     } catch (e) {
