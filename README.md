@@ -24,13 +24,14 @@ Your agent locks USDC in escrow; Settle releases it automatically the moment the
 ```
 Agent (PayBox) ──discover_plugins/get_contract──▶ /plugin.json   (tool contract)
       │ use_plugin(create_deal)  ──x402 $0.05──▶ /api/plugin/use ─▶ Supabase (deals + timeline)
-      │ PayBox send_payment (passkey) ──USDC──▶ Escrow wallet (Base Sepolia / Base)
+      │ PayBox send_payment (passkey) ──USDC──▶ Escrow wallet (Eth Sepolia / Base Sepolia / Base)
       │ use_plugin(fund_deal, tx)   ──▶ Settle verifies the USDC Transfer on-chain → status "funded"
 GitHub ──webhook (HMAC)──▶ /api/webhooks/github ─▶ GitHub API double-check ─▶ release USDC to payee
 Dashboard polling + daily Vercel cron ─▶ /api/cron ─▶ release / refund at deadline
 ```
 - Next.js 16 on Vercel, Supabase Postgres (key-guarded RPC functions, RLS on), viem for Base.
-- `SETTLE_NETWORK=base-sepolia` (testnet) or `base` (mainnet). One env var flips USDC address, RPC, explorer.
+- `SETTLE_NETWORK=sepolia` (Ethereum Sepolia, chain 11155111 — current testnet funds), `base-sepolia`, or `base` (mainnet). One env var flips USDC address, RPC, explorer.
+- x402 fees settle on `X402_NETWORK` (default base-sepolia when escrow is on Eth Sepolia, since the public x402.org facilitator does not support Eth Sepolia).
 - Escrow is a server-held wallet for the hackathon (key only in Vercel env). Next step: an on-chain escrow contract with an arbiter-signed release.
 
 ## API

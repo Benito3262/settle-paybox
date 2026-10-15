@@ -1,4 +1,4 @@
-import { NETWORK, USDC, USDC_EIP712_NAME, escrowAddress } from "./chain";
+import { X402_NETWORK as NETWORK, X402_USDC as USDC, X402_USDC_NAME as USDC_EIP712_NAME, escrowAddress } from "./chain";
 
 export const CREATE_PRICE_USD = Number(process.env.CREATE_PRICE_USD || "0.05");
 const FACILITATOR = process.env.X402_FACILITATOR_URL || "https://x402.org/facilitator";
