@@ -1,0 +1,6 @@
+@import "tailwindcss";
+body { background: #0a0c10; color: #e7ecf3; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+.card { background: #11151c; border: 1px solid #1f2733; border-radius: 14px; }
+.inp { background: #0a0c10; border: 1px solid #263040; border-radius: 10px; padding: 9px 12px; width: 100%; color: #e7ecf3; }
+.btn { background: #7c5cff; color: white; border-radius: 10px; padding: 9px 16px; font-weight: 600; }
+.btn:disabled { opacity: .5 }

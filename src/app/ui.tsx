@@ -1,0 +1,2 @@
+export const STATUS: Record<string, string> = { awaiting_funding: "bg-amber-500/15 text-amber-300", funded: "bg-sky-500/15 text-sky-300", releasing: "bg-violet-500/15 text-violet-300", released: "bg-emerald-500/15 text-emerald-300", refunding: "bg-orange-500/15 text-orange-300", refunded: "bg-orange-500/15 text-orange-300", expired: "bg-slate-500/15 text-slate-300" };
+export function Badge({ s }: { s: string }) { return <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${STATUS[s] || ""}`}>{s.replace("_", " ")}</span>; }
